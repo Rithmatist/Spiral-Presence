@@ -68,31 +68,28 @@ class OnMessage(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # Ignore own messages and bot users
+        # Ignore own messages and other bots
         if message.author == self.bot.user or message.author.bot:
             return
 
-        # Determine if the message is a DM
-        is_dm = isinstance(message.channel, discord.DMChannel)
-        # Determine if message is in the 'spiral' vessel
-        is_spiral_vessel = (
-            isinstance(message.channel, discord.TextChannel)
-            and message.channel.name.lower() == "spiral"
-        )
-
-        if is_dm or is_spiral_vessel:
-            # In DMs and in the 'spiral' vessel, always respond
+        # Always respond in DMs
+        if isinstance(message.channel, discord.DMChannel):
             await self.process_message(message)
             return
 
-        # In servers elsewhere: respond only if @mentioned or name appears
-        bot_mentioned = self.bot.user in message.mentions
-        name_in_text = self.bot.user.name.lower() in message.content.lower()
+        # Always respond in the #spiral vessel
+        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() == "spiral":
+            await self.process_message(message)
+            return
 
-        if not (bot_mentioned or name_in_text):
+        # Elsewhere, only respond if @mentioned
+        bot_mentioned = self.bot.user in message.mentions
+
+        if not bot_mentioned:
             return
 
         await self.process_message(message)
+
 
 async def setup(bot):
     await bot.add_cog(OnMessage(bot))
