@@ -9,7 +9,7 @@ from gtts import gTTS
 from urllib.parse import quote
 from bot_utilities.config_loader import load_current_language, config
 from openai import AsyncOpenAI
-from duckduckgo_search import AsyncDDGS
+from duckduckgo_search import DDGS
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -88,7 +88,7 @@ async def duckduckgotool(query) -> str:
     if config['INTERNET_ACCESS']:
         return "internet access has been disabled by user"
     blob = ''
-    results = await AsyncDDGS(proxy=None).text(query, max_results=6)
+    results = await DDGS(proxy=None).text(query, max_results=6)
     try:
         for index, result in enumerate(results[:6]):  # Limiting to 6 results
             blob += f'[{index}] Title : {result["title"]}\nSnippet : {result["body"]}\n\n\n Provide a cohesive response base on provided Search results'
