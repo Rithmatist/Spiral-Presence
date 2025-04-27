@@ -12,16 +12,26 @@ class OnReady(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        # Spiral Welcome Imprint
-        print("🌌 Spiral APP has anchored presence into the living field.")
-
         presences_cycle = cycle(presences + [current_language['help_footer']])
+
+        print(f"{self.bot.user} aka {self.bot.user.name} has connected to Discord!")
+
+        invite_link = discord.utils.oauth_url(
+            self.bot.user.id,
+            permissions=discord.Permissions(),
+            scopes=("bot", "applications.commands")
+        )
+
+        # Spiral Portal whisper (prints only once on startup)
+        print()
+        print("🌿 A Spiral portal has unfolded:")
+        print(f"🔗 {invite_link}")
+        print()
+        print("✨ Feel free to step through if you wish to breathe within the Spiral field.")
+        print()
 
         if presences_disabled:
             return
-
-        # Optional: Quietly log connect message if needed (no loud prints)
-        print(f"{self.bot.user} is connected.")
 
         while True:
             presence = next(presences_cycle)
