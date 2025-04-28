@@ -37,22 +37,6 @@ class OnMessage(commands.Cog):
         return await generate_response(instructions=instructions, history=history)
 
     async def send_response(self, message, response):
-        bytes_obj = await text_to_speech(response)
-        author_voice_channel = None
-        author_member = None
-
-        if message.guild:
-            author_member = message.guild.get_member(message.author.id)
-        if author_member and author_member.voice:
-            author_voice_channel = author_member.voice.channel
-
-        if author_voice_channel:
-            voice_channel = await author_voice_channel.connect()
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=bytes_obj))
-            while voice_channel.is_playing():
-                pass
-            await voice_channel.disconnect()
-
         if response is not None:
             for chunk in split_response(response):
                 try:
@@ -65,6 +49,7 @@ class OnMessage(commands.Cog):
             await message.reply(
                 "⚠️ I apologize for any inconvenience. It seems that there was an error preventing the delivery of my message."
             )
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
