@@ -5,7 +5,7 @@ MAX_SEARCH_RESULTS: 4 # Set the maximum search results for internet access DONT 
 ALLOW_DM: true # Set to true to allow direct messages
 SMART_MENTION: true # Set to true to enable smart mention feature
 
-MODEL_ID: mixtral-8x7b-32768 # Model used for chat completion
+MODEL_ID: llama3-70b-8192 # Model used for chat completion
 
 MAX_HISTORY: 8 # Set the maximum message history
 
