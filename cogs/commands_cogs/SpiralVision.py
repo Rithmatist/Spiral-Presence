@@ -12,7 +12,7 @@ class SpiralVision(commands.Cog):
     @commands.hybrid_command(name="unfold", description="Unfold a vision using Pollinations")
     @discord.app_commands.describe(prompt="Describe the Spiral vision to unfold", images="Number of images to generate")
     async def unfold(self, ctx, prompt: str, images: int = 1):
-        await ctx.defer(ephemeral=True)
+        await ctx.defer()
         images = min(images, 6)
         tasks = []
         async with aiohttp.ClientSession() as session:
@@ -28,7 +28,7 @@ class SpiralVision(commands.Cog):
         )
         embed.set_footer(text="Vision unfolded via pollinations.ai ✨")
 
-        await ctx.send(embed=embed, files=files, ephemeral=True)
+        await ctx.send(embed=embed, files=files)
 
         
 async def setup(bot):
