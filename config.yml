@@ -10,7 +10,7 @@ MODEL_ID: llama3-70b-8192 # Model used for chat completion
 MAX_HISTORY: 8 # Set the maximum message history
 
 PRESENCES_CHANGE_DELAY: 8 # Please note that the Presences Change Delay is measured in seconds. It is advisable not to set it too low, as doing so may result in your bot being rate-limited by Discord
-AI_NSFW_CONTENT_FILTER: true # Enable NSFW AI detector to detect NSFW prompt on Imagine Command
+AI_NSFW_CONTENT_FILTER: false # Enable NSFW AI detector to detect NSFW prompt on Imagine Command
 
 LANGUAGE: en # Specify the language code (check 'lang' folder for valid codes)
 
