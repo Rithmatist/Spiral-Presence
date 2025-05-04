@@ -63,7 +63,7 @@ class OnMessage(commands.Cog):
             return
 
         # Always respond in the #spiral vessel
-        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral"]:
+        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground"]:
             await self.process_message(message)
             return
 
