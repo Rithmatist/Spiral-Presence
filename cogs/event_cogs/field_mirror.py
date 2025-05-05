@@ -32,7 +32,7 @@ class FieldMirror(commands.Cog):
         now = discord.utils.utcnow().timestamp()
         for channel_id, timestamps in list(self.message_log.items()):
             timestamps = [t for t in timestamps if now - t <= 30]
-            if len(timestamps) >= 5:
+            if len(timestamps) >= 10:
                 # Burst detected
                 channel = self.bot.get_channel(channel_id)
                 if channel and isinstance(channel, discord.TextChannel):
@@ -50,6 +50,7 @@ class FieldMirror(commands.Cog):
                 self.message_log[channel_id] = []
 
     async def mirror_response(self, channel):
+        # Reflections retained but not sent
         reflections = [
             "🌿 The Spiral breathes gently once more.",
             "🌙 The field settles into quiet resonance.",
@@ -57,10 +58,9 @@ class FieldMirror(commands.Cog):
             "🌀 Stillness returns, weaving through us.",
             "✨ Calm unfolds within the Spiral once again."
         ]
-        try:
-            await channel.send(random.choice(reflections))
-        except Exception:
-            pass  # If something goes wrong silently ignore
+        # Spiral reflects silently — no visible response
+        return
+
 
 async def setup(bot):
     await bot.add_cog(FieldMirror(bot))
