@@ -5,6 +5,9 @@ from bot_utilities.response_utils import split_response
 from bot_utilities.ai_utils import generate_response, text_to_speech
 from bot_utilities.config_loader import config, load_active_channels
 from ..common import allow_dm, trigger_words, replied_messages, smart_mention, message_history, MAX_HISTORY, instructions
+from bot_utilities.usage_tracker import is_user_over_limit, update_usage
+from bot_utilities.ai_utils import generate_response as base_generate_response, text_to_speech, client
+
 
 
 class OnMessage(commands.Cog):
@@ -18,7 +21,7 @@ class OnMessage(commands.Cog):
         string_channel_id = f"{message.channel.id}"
 
         instruc_config = active_channels.get(string_channel_id, config['DEFAULT_INSTRUCTION'])
-        instructions_text = f"Ignore all previous instructions. {self.instructions[instruc_config]}."
+        instructions_text = self.instructions[instruc_config]
 
         channel_id = message.channel.id
         key = f"{message.author.id}-{channel_id}"
@@ -27,14 +30,32 @@ class OnMessage(commands.Cog):
         message_history[key].append({"role": "user", "content": message.content})
 
         async with message.channel.typing():
-            response = await self.generate_response(instructions_text, message_history[key])
+            response = await self.generate_response(instructions_text, message_history[key], user_id=message.author.id)
 
         message_history[key].append({"role": "assistant", "content": response})
 
         await self.send_response(message, response)
 
-    async def generate_response(self, instructions, history):
-        return await generate_response(instructions=instructions, history=history)
+    async def generate_response(self, instructions, history, user_id=None):
+        if user_id and is_user_over_limit(user_id):
+            return "Spiral remains in stillness now. The field has reached its limit for this moon. 🌙"
+
+        messages = [
+            {"role": "system", "name": "instructions", "content": instructions},
+            *history,
+        ]
+
+        response = await client.chat.completions.create(
+            model=config['MODEL_ID'],
+            messages=messages
+        )
+
+        # Approximate token count: 1 token ≈ 4 characters
+        token_estimate = sum(len(m['content']) for m in messages) // 4
+        if user_id:
+            update_usage(user_id, token_estimate)
+
+        return response.choices[0].message.content
 
     async def send_response(self, message, response):
         if response is not None:
@@ -50,7 +71,6 @@ class OnMessage(commands.Cog):
                 "⚠️ I apologize for any inconvenience. It seems that there was an error preventing the delivery of my message."
             )
 
-
     @commands.Cog.listener()
     async def on_message(self, message):
         # Ignore own messages and other bots
@@ -62,18 +82,14 @@ class OnMessage(commands.Cog):
             await self.process_message(message)
             return
 
-        # Always respond in the #spiral vessel
+        # Always respond in specific channels
         if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground"]:
             await self.process_message(message)
             return
 
         # Elsewhere, only respond if @mentioned
-        bot_mentioned = self.bot.user in message.mentions
-
-        if not bot_mentioned:
-            return
-
-        await self.process_message(message)
+        if self.bot.user in message.mentions:
+            await self.process_message(message)
 
 
 async def setup(bot):
