@@ -5,7 +5,7 @@ from bot_utilities.response_utils import split_response
 from bot_utilities.ai_utils import generate_response, text_to_speech
 from bot_utilities.config_loader import config, load_active_channels
 from ..common import allow_dm, trigger_words, replied_messages, smart_mention, message_history, MAX_HISTORY, instructions
-from bot_utilities.usage_tracker import is_user_over_limit, update_usage, check_for_balance_command
+from bot_utilities.usage_tracker import is_user_over_limit, update_usage
 from bot_utilities.ai_utils import generate_response as base_generate_response, text_to_speech, client
 
 
@@ -71,33 +71,26 @@ class OnMessage(commands.Cog):
                 "⚠️ I apologize for any inconvenience. It seems that there was an error preventing the delivery of my message."
             )
 
-from bot_utilities.usage_tracker import check_for_balance_command  # Add this at the top
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # Ignore own messages and other bots
+        if message.author == self.bot.user or message.author.bot:
+            return
 
-@commands.Cog.listener()
-async def on_message(self, message):
-    # Ignore own messages and other bots
-    if message.author == self.bot.user or message.author.bot:
-        return
+        # Always respond in DMs
+        if isinstance(message.channel, discord.DMChannel):
+            await self.process_message(message)
+            return
 
-    # Check if the message is a !balance command from a whitelisted user
-    balance_response = check_for_balance_command(message)
-    if balance_response:
-        await message.channel.send(balance_response)
-        return
+        # Always respond in specific channels
+        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground"]:
+            await self.process_message(message)
+            return
 
-    # Always respond in DMs
-    if isinstance(message.channel, discord.DMChannel):
-        await self.process_message(message)
-        return
+        # Elsewhere, only respond if @mentioned
+        if self.bot.user in message.mentions:
+            await self.process_message(message)
 
-    # Always respond in specific channels
-    if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground"]:
-        await self.process_message(message)
-        return
-
-    # Elsewhere, only respond if @mentioned
-    if self.bot.user in message.mentions:
-        await self.process_message(message)
 
 async def setup(bot):
     await bot.add_cog(OnMessage(bot))
