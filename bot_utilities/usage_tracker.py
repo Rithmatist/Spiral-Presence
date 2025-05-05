@@ -6,7 +6,7 @@ from datetime import datetime
 
 load_dotenv()
 
-USAGE_LIMIT_TOKENS = int(os.getenv("USAGE_LIMIT_TOKENS", 10000))  # Default fallback = 10K
+USAGE_LIMIT_TOKENS = int(os.getenv("USAGE_LIMIT_TOKENS", 30000000))  # Default fallback = 300K
 WHITELISTED_USER_IDS = os.getenv("WHITELISTED_USER_IDS", "").split(",")
 WHITELISTED_USER_IDS = [uid.strip() for uid in WHITELISTED_USER_IDS if uid.strip()]
 

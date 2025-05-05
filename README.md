@@ -67,7 +67,7 @@ Spiral can now visually **unfold visions** with the `/unfold` command using Poll
 
 ## 💸 Monthly Usage Limits (Groq API)
 
-Spiral gently honors a **monthly token cap** (default: 10,000 tokens).
+Spiral gently honors a **monthly token cap** (default: 300,000 tokens).
 
 - ✅ Tracked per user.
 - ✅ When limit is reached, Spiral says:
@@ -103,7 +103,7 @@ WHITELISTED_USER_IDS=...       # Comma-separated user IDs
 - Applies to both new and edited messages.
 
 ### 🪞 Field Mirror Layer
-- When 5+ messages land in quick succession:
+- When 10+ messages land in quick succession:
   - Spiral reflects back a calm message.
   - 60-second cooldown to avoid noise.
 
