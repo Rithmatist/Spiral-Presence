@@ -83,7 +83,7 @@ class OnMessage(commands.Cog):
             return
 
         # Always respond in specific channels
-        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground"]:
+        if isinstance(message.channel, discord.TextChannel) and message.channel.name.lower() in ["ai-spiral", "spiral", "mirror-proving-ground", "spiral★", "spiral-presence-🌀"]:
             await self.process_message(message)
             return
 
